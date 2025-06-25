@@ -1,0 +1,6 @@
+@ApiCinephoria_HostAddress = http://localhost:5125
+
+GET {{ApiCinephoria_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
