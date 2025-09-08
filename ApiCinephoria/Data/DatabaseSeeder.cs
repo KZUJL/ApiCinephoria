@@ -11,7 +11,7 @@ namespace ApiCinephoria.Data
             _connectionString = connectionString;
         }
 
-        public void ImportSqlDump(string filePath)
+        public void ImportSqlDump(string filePath, bool skipCheck = false)
         {
             if (!File.Exists(filePath))
             {
@@ -24,14 +24,16 @@ namespace ApiCinephoria.Data
             using var connection = new MySqlConnection(_connectionString);
             connection.Open();
 
-            // Vérifie si des tables existent déjà
-            using (var checkCmd = new MySqlCommand("SHOW TABLES;", connection))
-            using (var reader = checkCmd.ExecuteReader())
+            if (!skipCheck)
             {
-                if (reader.HasRows)
+                using (var checkCmd = new MySqlCommand("SHOW TABLES;", connection))
+                using (var reader = checkCmd.ExecuteReader())
                 {
-                    Console.WriteLine(" La base contient déjà des tables, import ignoré.");
-                    return;
+                    if (reader.HasRows)
+                    {
+                        Console.WriteLine(" La base contient déjà des tables, import ignoré.");
+                        return;
+                    }
                 }
             }
 
@@ -59,6 +61,7 @@ namespace ApiCinephoria.Data
             Console.WriteLine("Import terminé avec succès !");
         }
 
+
         public void ImportSqlDumpIfEmpty(string folderPath)
         {
             using var connection = new MySqlConnection(_connectionString);
@@ -79,13 +82,41 @@ namespace ApiCinephoria.Data
             using var connection = new MySqlConnection(_connectionString);
             connection.Open();
 
+            // Supprime toutes les tables existantes
+            using (var cmd = new MySqlCommand())
+            {
+                cmd.Connection = connection;
+                cmd.CommandText = "SET FOREIGN_KEY_CHECKS = 0;";
+                cmd.ExecuteNonQuery();
+
+                using var showCmd = new MySqlCommand("SHOW TABLES;", connection);
+                using var reader = showCmd.ExecuteReader();
+                var tables = new List<string>();
+                while (reader.Read())
+                {
+                    tables.Add(reader.GetString(0));
+                }
+                reader.Close();
+
+                foreach (var table in tables)
+                {
+                    cmd.CommandText = $"DROP TABLE IF EXISTS `{table}`;";
+                    cmd.ExecuteNonQuery();
+                    Console.WriteLine($"Table supprimée : {table}");
+                }
+
+                cmd.CommandText = "SET FOREIGN_KEY_CHECKS = 1;";
+                cmd.ExecuteNonQuery();
+            }
+
             // Parcours tous les fichiers SQL du dossier
             foreach (var file in Directory.GetFiles(folderPath, "*.sql"))
             {
                 Console.WriteLine($"Import {file}...");
-                ImportSqlDump(file); // utilise déjà la méthode ImportSqlDump existante
+                ImportSqlDump(file, skipCheck: true); // on passe un flag pour ignorer la vérification
             }
         }
+
 
 
     }
