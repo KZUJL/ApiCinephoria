@@ -25,10 +25,15 @@ if (string.IsNullOrEmpty(mysqlConnection))
 if (string.IsNullOrEmpty(mongoConnection))
     throw new Exception("MONGODB_CONNECTION non défini.");
 
+// Convertir URI Railway en connection string MySQL classique
+var uri = new Uri(mysqlConnection);
+var userInfo = uri.UserInfo.Split(':');
+var mysqlConnectionString = $"Server={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Uid={userInfo[0]};Pwd={userInfo[1]};SslMode=Preferred;";
+
 // Import SQL uniquement si base vide
 try
 {
-    var seeder = new DatabaseSeeder(mysqlConnection);
+    var seeder = new DatabaseSeeder(mysqlConnectionString);
     seeder.ImportSqlDumpIfEmpty("Data"); // nouvelle méthode pour parcourir tous les fichiers
 }
 catch (Exception ex)
@@ -38,7 +43,7 @@ catch (Exception ex)
 
 // DbContext
 builder.Services.AddDbContext<CinephoriaContext>(options =>
-    options.UseMySql(mysqlConnection, new MySqlServerVersion(new Version(8, 0, 32))));
+    options.UseMySql(mysqlConnectionString, new MySqlServerVersion(new Version(8, 0, 32))));
 
 // MongoDB
 builder.Services.Configure<MongoDbSettings>(config =>
@@ -97,5 +102,4 @@ app.UseCors("AllowLocalhost");
 app.UseAuthorization();
 app.MapControllers();
 
-// Pas besoin d'app.Urls.Add, Fly.io utilise ASPNETCORE_URLS
 app.Run();
