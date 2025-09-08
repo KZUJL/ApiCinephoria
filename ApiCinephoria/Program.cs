@@ -24,7 +24,36 @@ public class Program
         {
             throw new Exception("La chaîne de connexion MySQL n'est pas définie.");
         }
+        // Liste des dumps à importer (dans Data/)
+        var dumpFiles = new[]
+        {
+            "Data/cinephoria_users.sql",
+            "Data/cinephoria_roles.sql",
+            "Data/cinephoria_locations.sql",
+            "Data/cinephoria_cinemas.sql",
+            "Data/cinephoria_rooms.sql",
+            "Data/cinephoria_movies.sql",
+            "Data/cinephoria_movietimes.sql",
+            "Data/cinephoria_cinema_schedule.sql",
+            "Data/cinephoria_incident.sql"
+        };
 
+        try
+        {
+            var seeder = new DatabaseSeeder(mysqlConnection);
+
+            foreach (var dumpFile in dumpFiles)
+            {
+                Console.WriteLine($" Import de {dumpFile} ...");
+                seeder.ImportSqlDump(dumpFile);
+            }
+
+            Console.WriteLine(" Import terminé avec succès !");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($" Erreur import dump: {ex.Message}");
+        }
         builder.Services.AddDbContext<CinephoriaContext>(options =>
             options.UseMySql(mysqlConnection, new MySqlServerVersion(new Version(8, 0, 32))));
 

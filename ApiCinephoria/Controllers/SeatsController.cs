@@ -69,6 +69,7 @@ namespace ApiCinephoria.Controllers
             existingSeat.RowLocation = updatedSeat.RowLocation;
             existingSeat.ColumnLocation = updatedSeat.ColumnLocation;
             existingSeat.RoomId = updatedSeat.RoomId;
+            existingSeat.Status = updatedSeat.Status;
 
             await _context.SaveChangesAsync();
 

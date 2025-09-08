@@ -13,8 +13,29 @@ namespace ApiCinephoria.Data
         public DbSet<SeatsModel> Locations { get; set; }
         public DbSet<LoginCreateModel> Users { get; set; }
         public DbSet<RoleModel> Roles { get; set; }
+        public DbSet<IncidentModel> Incidents { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<IncidentModel>()
+                .ToTable("incident")
+                .HasKey(s => s.IncidentId);
+
+            modelBuilder.Entity<IncidentModel>()
+                .HasOne<IncidentModel>()
+                .WithMany()
+                .HasForeignKey(s => s.CinemaId);
+
+            modelBuilder.Entity<IncidentModel>()
+                .HasOne<IncidentModel>()
+                .WithMany()
+                .HasForeignKey(s => s.RoomId);
+
+            modelBuilder.Entity<IncidentModel>()
+                .HasOne<IncidentModel>()
+                .WithMany()
+                .HasForeignKey(s => s.LocationId);
+
             modelBuilder.Entity<CinemaScheduleModel>()
                 .ToTable("cinema_schedule")
                 .HasKey(s => s.ScheduleId);

@@ -12,6 +12,7 @@ namespace ApiCinephoria.Models
         public string Name { get; set; }
         public int RowLocation { get; set; }
         public int ColumnLocation { get; set; }
+        public bool Status { get; set; } = true;
 
         [JsonIgnore]
         public RoomModel? Room { get; set; }
