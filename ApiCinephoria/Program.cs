@@ -84,7 +84,7 @@ var app = builder.Build();
 try
 {
     var seeder = new DatabaseSeeder(mysqlConnectionString);
-    var sqlFolder = Path.Combine(AppContext.BaseDirectory, "SqlDumps"); // dossier contenant tous les fichiers SQL
+    var sqlFolder = Path.Combine(AppContext.BaseDirectory, "Data"); // dossier contenant tous les fichiers SQL
     Console.WriteLine("Début de l'import SQL (forcer la recréation des tables)...");
     seeder.ImportSqlDumpForce(sqlFolder);
     Console.WriteLine("Import SQL terminé !");
