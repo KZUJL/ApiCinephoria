@@ -58,5 +58,27 @@ namespace ApiCinephoria.Data
 
             Console.WriteLine("Import terminé avec succès !");
         }
+
+        public void ImportSqlDumpIfEmpty(string folderPath)
+        {
+            using var connection = new MySqlConnection(_connectionString);
+            connection.Open();
+
+            using var checkCmd = new MySqlCommand("SHOW TABLES;", connection);
+            using var reader = checkCmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                Console.WriteLine("Base déjà remplie, import SQL ignoré.");
+                return;
+            }
+
+            // Parcours tous les fichiers SQL du dossier
+            foreach (var file in Directory.GetFiles(folderPath, "*.sql"))
+            {
+                Console.WriteLine($"Import {file}...");
+                ImportSqlDump(file);
+            }
+        }
+
     }
 }

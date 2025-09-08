@@ -1,19 +1,23 @@
-# Image runtime
+# Base runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
 
-# Image build
+# Définir l'URL Kestrel pour Fly.io
+ENV ASPNETCORE_URLS=http://+:80
+
+# SDK pour build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copier uniquement le projet pour restore (optimise le cache)
-COPY ApiCinephoria/ApiCinephoria.csproj ./ApiCinephoria/
-RUN dotnet restore ./ApiCinephoria/ApiCinephoria.csproj
+# Copier csproj et restaurer
+COPY ["ApiCinephoria/ApiCinephoria.csproj", "ApiCinephoria/"]
+RUN dotnet restore "ApiCinephoria/ApiCinephoria.csproj"
 
-# Copier tout le reste
+# Copier tout le code
 COPY . .
-RUN dotnet publish ./ApiCinephoria/ApiCinephoria.csproj -c Release -o /app/publish
+WORKDIR "/src/ApiCinephoria"
+RUN dotnet publish -c Release -o /app/publish
 
 # Image finale
 FROM base AS final
