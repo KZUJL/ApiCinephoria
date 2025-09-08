@@ -65,12 +65,7 @@ namespace ApiCinephoria.Data
             connection.Open();
 
             using var checkCmd = new MySqlCommand("SHOW TABLES;", connection);
-            using var reader = checkCmd.ExecuteReader();
-            if (reader.HasRows)
-            {
-                Console.WriteLine("Base déjà remplie, import SQL ignoré.");
-                return;
-            }
+            using var reader = checkCmd.ExecuteReader();           
 
             // Parcours tous les fichiers SQL du dossier
             foreach (var file in Directory.GetFiles(folderPath, "*.sql"))
