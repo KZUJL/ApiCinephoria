@@ -129,6 +129,7 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
+        app.Urls.Add("http://0.0.0.0:80"); //fly.io
 
         if (app.Environment.IsDevelopment())
         {
