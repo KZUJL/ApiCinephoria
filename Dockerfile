@@ -17,10 +17,23 @@ RUN dotnet restore "ApiCinephoria/ApiCinephoria.csproj"
 # Copier tout le code
 COPY . .
 WORKDIR "/src/ApiCinephoria"
+
+# Copier le dossier Data dans l'image
+# Il sera disponible dans /app/Data
+RUN mkdir -p /app/Data
+COPY ApiCinephoria/Data /app/Data
+
+# Publier l'application
 RUN dotnet publish -c Release -o /app/publish
 
 # Image finale
 FROM base AS final
 WORKDIR /app
+
+# Copier l'application publiée
 COPY --from=build /app/publish .
+
+# Copier le dossier Data
+COPY --from=build /app/Data ./Data
+
 ENTRYPOINT ["dotnet", "ApiCinephoria.dll"]

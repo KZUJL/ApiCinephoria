@@ -34,7 +34,8 @@ var mysqlConnectionString = $"Server={uri.Host};Port={uri.Port};Database={uri.Ab
 try
 {
     var seeder = new DatabaseSeeder(mysqlConnectionString);
-    seeder.ImportSqlDumpIfEmpty("Data"); // nouvelle méthode pour parcourir tous les fichiers
+    var dataPath = Path.Combine(AppContext.BaseDirectory, "Data"); // /app/Data dans le conteneur
+    seeder.ImportSqlDumpIfEmpty(dataPath);    
 }
 catch (Exception ex)
 {
