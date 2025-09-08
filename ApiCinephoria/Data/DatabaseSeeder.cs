@@ -74,6 +74,19 @@ namespace ApiCinephoria.Data
                 ImportSqlDump(file);
             }
         }
+        public void ImportSqlDumpForce(string folderPath)
+        {
+            using var connection = new MySqlConnection(_connectionString);
+            connection.Open();
+
+            // Parcours tous les fichiers SQL du dossier
+            foreach (var file in Directory.GetFiles(folderPath, "*.sql"))
+            {
+                Console.WriteLine($"Import {file}...");
+                ImportSqlDump(file); // utilise déjà la méthode ImportSqlDump existante
+            }
+        }
+
 
     }
 }

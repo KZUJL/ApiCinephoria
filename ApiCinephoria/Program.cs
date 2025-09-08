@@ -30,18 +30,6 @@ var uri = new Uri(mysqlConnection);
 var userInfo = uri.UserInfo.Split(':');
 var mysqlConnectionString = $"Server={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Uid={userInfo[0]};Pwd={userInfo[1]};SslMode=Preferred;";
 
-// Import SQL uniquement si base vide
-try
-{
-    var seeder = new DatabaseSeeder(mysqlConnectionString);
-    var dataPath = Path.Combine(AppContext.BaseDirectory, "Data"); // /app/Data dans le conteneur
-    seeder.ImportSqlDumpIfEmpty(dataPath);    
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Erreur import dump: {ex.Message}");
-}
-
 // DbContext
 builder.Services.AddDbContext<CinephoriaContext>(options =>
     options.UseMySql(mysqlConnectionString, new MySqlServerVersion(new Version(8, 0, 32))));
@@ -91,6 +79,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// --- Seeder forcé : supprime toutes les tables et réimporte ---
+try
+{
+    var seeder = new DatabaseSeeder(mysqlConnectionString);
+    var sqlFolder = Path.Combine(AppContext.BaseDirectory, "SqlDumps"); // dossier contenant tous les fichiers SQL
+    Console.WriteLine("Début de l'import SQL (forcer la recréation des tables)...");
+    seeder.ImportSqlDumpForce(sqlFolder);
+    Console.WriteLine("Import SQL terminé !");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Erreur lors de l'import SQL : {ex.Message}");
+}
 
 if (app.Environment.IsDevelopment())
 {
