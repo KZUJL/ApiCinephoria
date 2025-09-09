@@ -1,4 +1,5 @@
 ﻿using MySqlConnector;
+using System.Text;
 
 namespace ApiCinephoria.Data
 {
@@ -11,7 +12,34 @@ namespace ApiCinephoria.Data
             _connectionString = connectionString;
         }
 
-        public void ImportSqlDump(string filePath, bool skipCheck = false)
+        // --- Fonction utilitaire pour découper proprement les commandes SQL ---
+        private IEnumerable<string> SplitSqlStatements(string sql)
+        {
+            var sb = new StringBuilder();
+            foreach (var line in sql.Split('\n'))
+            {
+                var trimmed = line.Trim();
+
+                // Ignore commentaires MySQL
+                if (trimmed.StartsWith("--") || trimmed.StartsWith("/*") || trimmed.StartsWith("/*!"))
+                    continue;
+
+                sb.AppendLine(line);
+
+                // On exécute seulement quand une ligne se termine par ";"
+                if (trimmed.EndsWith(";"))
+                {
+                    yield return sb.ToString();
+                    sb.Clear();
+                }
+            }
+
+            if (sb.Length > 0)
+                yield return sb.ToString();
+        }
+
+        // --- Import d’un fichier SQL complet ---
+        public void ImportSqlDump(string filePath)
         {
             if (!File.Exists(filePath))
             {
@@ -24,100 +52,86 @@ namespace ApiCinephoria.Data
             using var connection = new MySqlConnection(_connectionString);
             connection.Open();
 
-            if (!skipCheck)
+            foreach (var statement in SplitSqlStatements(sql))
             {
-                using (var checkCmd = new MySqlCommand("SHOW TABLES;", connection))
-                using (var reader = checkCmd.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        Console.WriteLine(" La base contient déjà des tables, import ignoré.");
-                        return;
-                    }
-                }
-            }
-
-            using var cmd = new MySqlCommand();
-            cmd.Connection = connection;
-
-            var commands = sql.Split(";", StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (var command in commands)
-            {
-                string trimmed = command.Trim();
-                if (string.IsNullOrWhiteSpace(trimmed)) continue;
-
-                cmd.CommandText = trimmed + ";";
+                using var cmd = new MySqlCommand(statement, connection);
                 try
                 {
                     cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($" Erreur sur commande: {trimmed}\n{ex.Message}");
+                    Console.WriteLine($" Erreur SQL dans {Path.GetFileName(filePath)} : {ex.Message}");
                 }
             }
 
-            Console.WriteLine("Import terminé avec succès !");
+            Console.WriteLine($"Import terminé pour {Path.GetFileName(filePath)}");
         }
 
-
+        // --- Import seulement si aucune table ---
         public void ImportSqlDumpIfEmpty(string folderPath)
         {
             using var connection = new MySqlConnection(_connectionString);
             connection.Open();
 
             using var checkCmd = new MySqlCommand("SHOW TABLES;", connection);
-            using var reader = checkCmd.ExecuteReader();           
+            using var reader = checkCmd.ExecuteReader();
 
-            // Parcours tous les fichiers SQL du dossier
+            if (reader.HasRows)
+            {
+                Console.WriteLine("La base contient déjà des tables, import ignoré.");
+                return;
+            }
+
             foreach (var file in Directory.GetFiles(folderPath, "*.sql"))
             {
                 Console.WriteLine($"Import {file}...");
                 ImportSqlDump(file);
             }
         }
+
+        // --- Import forcé : supprime toutes les tables puis recharge ---
         public void ImportSqlDumpForce(string folderPath)
         {
             using var connection = new MySqlConnection(_connectionString);
             connection.Open();
 
-            // Supprime toutes les tables existantes
-            using (var cmd = new MySqlCommand())
-            {
-                cmd.Connection = connection;
-                cmd.CommandText = "SET FOREIGN_KEY_CHECKS = 0;";
-                cmd.ExecuteNonQuery();
+            Console.WriteLine("🗑 Suppression des tables existantes...");
+            using (var dropCmd = new MySqlCommand("SET FOREIGN_KEY_CHECKS = 0;", connection))
+                dropCmd.ExecuteNonQuery();
 
-                using var showCmd = new MySqlCommand("SHOW TABLES;", connection);
-                using var reader = showCmd.ExecuteReader();
+            using (var cmd = new MySqlCommand("SHOW TABLES;", connection))
+            using (var reader = cmd.ExecuteReader())
+            {
                 var tables = new List<string>();
                 while (reader.Read())
-                {
                     tables.Add(reader.GetString(0));
-                }
+
                 reader.Close();
 
                 foreach (var table in tables)
                 {
-                    cmd.CommandText = $"DROP TABLE IF EXISTS `{table}`;";
-                    cmd.ExecuteNonQuery();
-                    Console.WriteLine($"Table supprimée : {table}");
+                    try
+                    {
+                        using var drop = new MySqlCommand($"DROP TABLE IF EXISTS `{table}`;", connection);
+                        drop.ExecuteNonQuery();
+                        Console.WriteLine($"   - Table {table} supprimée");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"⚠️ Erreur suppression {table}: {ex.Message}");
+                    }
                 }
-
-                cmd.CommandText = "SET FOREIGN_KEY_CHECKS = 1;";
-                cmd.ExecuteNonQuery();
             }
 
-            // Parcours tous les fichiers SQL du dossier
+            using (var dropCmd = new MySqlCommand("SET FOREIGN_KEY_CHECKS = 1;", connection))
+                dropCmd.ExecuteNonQuery();
+
+            Console.WriteLine("📂 Réimport des fichiers SQL...");
             foreach (var file in Directory.GetFiles(folderPath, "*.sql"))
             {
-                Console.WriteLine($"Import {file}...");
-                ImportSqlDump(file, skipCheck: true); // on passe un flag pour ignorer la vérification
+                ImportSqlDump(file);
             }
         }
-
-
-
     }
 }
