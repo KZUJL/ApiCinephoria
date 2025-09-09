@@ -17,6 +17,17 @@ namespace ApiCinephoria.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
+            // Table mapping exact (respecte la casse de MySQL)
+            modelBuilder.Entity<MovieModel>().ToTable("movies");
+            modelBuilder.Entity<CinemaModel>().ToTable("cinemas");
+            modelBuilder.Entity<CinemaScheduleModel>().ToTable("cinema_schedule");
+            modelBuilder.Entity<MovieTimesModel>().ToTable("movietimes");
+            modelBuilder.Entity<RoomModel>().ToTable("rooms");
+            modelBuilder.Entity<SeatsModel>().ToTable("locations");
+            modelBuilder.Entity<LoginCreateModel>().ToTable("users");
+            modelBuilder.Entity<RoleModel>().ToTable("roles");
+            modelBuilder.Entity<IncidentModel>().ToTable("incident");
+
             modelBuilder.Entity<IncidentModel>()
                 .ToTable("incident")
                 .HasKey(s => s.IncidentId);
