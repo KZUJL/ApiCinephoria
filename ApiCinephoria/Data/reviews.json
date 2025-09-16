@@ -1,0 +1,84 @@
+[
+  {
+    _id: ObjectId('683d9c710b54c7f9358c4ccb'),
+    UserId: 1,
+    UserName: 'Jean-Loup',
+    MovieId: 2,
+    MovieTitle: 'Frankenstein',
+    reviews: 4,
+    Comments: 'Un classique qui n’a pas pris une ride !\n' +
+      'J’ai été vraiment impressionné par l’ambiance sombre et l’interprétation de Boris Karloff dans le rôle de la créature. La mise en scène est saisissante pour un film de cette époque, et certains passages restent encore aujourd’hui très puissants. Il manque peut-être un peu de profondeur psychologique sur certains personnages secondaires, mais dans l’ensemble, c’est une œuvre marquante et intemporelle.',
+    ReviewsDate: ISODate('2025-06-02T12:43:03.813Z'),
+    ReviewsValidation: true
+  },
+  {
+    _id: ObjectId('683d9c920b54c7f9358c4ccc'),
+    UserId: 2,
+    UserName: 'User_1',
+    MovieId: 2,
+    MovieTitle: 'Frankenstein',
+    reviews: 3,
+    Comments: 'Quand ton pote veut juste te dire bonjour mais tout le monde panique.\n' +
+      'Bon, on va pas se mentir : la créature a une tête de mec qui voulait juste un câlin, et tout le monde lui court après avec des fourches. L’ambiance est sympa (pour 1931), mais entre les cris dramatiques, les ralentis involontaires et les dialogues façon "Théâtre du collège", j’ai parfois eu l’impression de regarder une réunion de famille un peu tendue.\n' +
+      'Bref, deux étoiles pour l’effort et la coupe de cheveux du docteur.',
+    ReviewsDate: ISODate('2025-06-02T12:43:03.813Z'),
+    ReviewsValidation: true
+  },
+  {
+    _id: ObjectId('683db0a055039778b5d5729a'),
+    UserId: 2,
+    UserName: 'User_1',
+    MovieId: 3,
+    MovieTitle: 'Metropolis',
+    reviews: 5,
+    Comments: 'Un film muet... mais un cri visuel assourdissant.\n' +
+      'Metropolis, c’est bien plus qu’un film de 1927. C’est une œuvre visionnaire qui parle encore à notre époque de lutte des classes, d’automatisation et d’humanité perdue dans les machines.\n' +
+      'Les décors sont gigantesques, la mise en scène hypnotisante, et certaines images restent gravées à jamais dans la mémoire.\n' +
+      'Fritz Lang a inventé la science-fiction au cinéma, rien que ça.\n' +
+      'Pour un film muet, il a énormément de choses à dire.',
+    ReviewsDate: ISODate('2025-06-02T14:08:57.226Z'),
+    ReviewsValidation: true
+  },
+  {
+    _id: ObjectId('683ffc98dd4569dab07374f6'),
+    UserId: 1,
+    UserName: 'Jean-Loup',
+    MovieId: 10,
+    MovieTitle: 'Le Seigneur des anneaux : La Communauté de l anneau',
+    reviews: 5,
+    Comments: 'Un chef-d’œuvre intemporel digne des plus grandes légendes.\n' +
+      "Chaque plan est une peinture, chaque note de la musique un frisson, chaque personnage une légende. Peter Jackson nous emmène en Terre du Milieu avec une telle puissance visuelle et émotionnelle qu'on oublie totalement que c’est du cinéma.\n" +
+      'La Communauté de l’Anneau, c’est le début d’un voyage mythique, un récit d’amitié, de courage, et de sacrifices, porté par un casting parfait et une réalisation magistrale.\n' +
+      'Trois heures ? On en redemande.',
+    ReviewsDate: ISODate('2025-06-04T07:57:28.017Z'),
+    ReviewsValidation: true
+  },
+  {
+    _id: ObjectId('68402b19dd4569dab07374f7'),
+    UserId: 2,
+    UserName: 'User_1',
+    MovieId: 10,
+    MovieTitle: 'Le Seigneur des anneaux : La Communauté de l anneau',
+    reviews: 4,
+    Comments: "Un excellent départ pour la trilogie. Très bonne adaptation, fidèle dans l'esprit au livre, même si quelques libertés peuvent décevoir les puristes. Les effets spéciaux tiennent encore très bien, et l’ambiance est grandiose. Un peu lent parfois, mais ça fait partie de la construction du mythe.",
+    ReviewsDate: ISODate('2025-06-02T07:57:28.017Z'),
+    ReviewsValidation: true
+  },
+  {
+    _id: ObjectId('685a41c8322b7272e9009e9f'),
+    UserId: 23,
+    UserName: 'Kam',
+    MovieId: 13,
+    MovieTitle: 'Le Seigneur des anneaux : Les Deux Tours',
+    reviews: 5,
+    Comments: 'Une épopée magistrale, encore plus intense !\n' +
+      '\n' +
+      "Le Seigneur des Anneaux : Les Deux Tours est une suite absolument exceptionnelle. Peter Jackson réussit l'exploit de faire encore mieux que le premier volet. Les paysages de la Terre du Milieu sont à couper le souffle, les batailles sont épiques (mention spéciale au siège du Gouffre de Helm), et la tension dramatique ne cesse de monter.\n" +
+      '\n' +
+      'Les personnages gagnent en profondeur, notamment Frodon, de plus en plus tourmenté, et Gollum, brillamment interprété, à la fois inquiétant et touchant. La musique d’Howard Shore accompagne parfaitement cette aventure haletante.\n' +
+      '\n' +
+      'Un chef-d’œuvre de fantasy, fidèle à l’univers de Tolkien, à voir absolument. Une immersion totale dans une légende moderne.',
+    ReviewsDate: ISODate('2025-06-24T06:12:24.172Z'),
+    ReviewsValidation: true
+  }
+]
