@@ -26,6 +26,94 @@ dotnet restore
 
 ### Initialisation de la base MySQL
 
+#### Exemple de création des tables MySQL
+
+USE CINEPHORIA;
+
+CREATE TABLE roles (
+    roleId INT PRIMARY KEY AUTO_INCREMENT,
+    roleName VARCHAR(250) NOT NULL
+);
+
+CREATE TABLE users (
+    userId INT PRIMARY KEY AUTO_INCREMENT,
+    firstName VARCHAR(250) NOT NULL,
+    lastName VARCHAR(250) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(250) NOT NULL,
+    roleId INT, 
+    userName VARCHAR(250) NOT NULL,
+    FOREIGN KEY (roleId) REFERENCES roles(roleId)
+);
+
+CREATE TABLE cinemas (
+    cinemaId INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(250) NOT NULL,
+    address VARCHAR(250) NOT NULL,
+    country VARCHAR(250) NOT NULL,
+    city VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Rooms (
+    roomId INT PRIMARY KEY AUTO_INCREMENT,
+    cinemaId INT NOT NULL,
+    name VARCHAR(250) NOT NULL,
+    quality VARCHAR(50) NOT NULL,
+    FOREIGN KEY (cinemaId) REFERENCES Cinemas(cinemaId)
+);
+
+CREATE TABLE Locations (
+    locationId INT PRIMARY KEY AUTO_INCREMENT,
+    roomId INT NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    name VARCHAR(250) NOT NULL, 
+    rowLocation INT NOT NULL,
+    columnLocation INT NOT NULL,
+    FOREIGN KEY (roomId) REFERENCES Rooms(roomId)
+);
+
+CREATE TABLE Incident (
+    incidentId INT PRIMARY KEY AUTO_INCREMENT,
+    roomId INT NOT NULL,
+    locationId INT NOT NULL,
+    date DATE NOT NULL,
+    description VARCHAR(250) NOT NULL,
+    FOREIGN KEY (roomId) REFERENCES Rooms(roomId),
+    FOREIGN KEY (locationId) REFERENCES Locations(locationId)
+);
+
+CREATE TABLE Movies (
+    movieId INT PRIMARY KEY AUTO_INCREMENT,
+    releaseDate DATE NOT NULL,
+    title VARCHAR(250) NOT NULL,
+    genre VARCHAR(250) NOT NULL,
+    description TEXT NOT NULL,
+    duration TIME NOT NULL,
+    poster VARCHAR(255) NULL,
+    trailer VARCHAR(255) NULL,
+    director VARCHAR(250) NOT NULL,
+    producer VARCHAR(250) NOT NULL,
+    cast TEXT NOT NULL
+);
+
+CREATE TABLE MovieTimes (
+    movieTimesId INT PRIMARY KEY AUTO_INCREMENT,
+    movieId INT NOT NULL,
+    cinemaId INT NOT NULL,
+    roomId INT NOT NULL,
+    day DATE NOT NULL,
+    startTime TIME NOT NULL,
+    endTime TIME NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (movieId) REFERENCES Movies(movieId),
+    FOREIGN KEY (cinemaId) REFERENCES Cinemas(cinemaId),
+    FOREIGN KEY (roomId) REFERENCES Locations(locationId)
+);
+
+ces requêtes ont été exécutées pour générer les fichiers SQL fournis dans le dossier Data/. Elles permettent de tester l’API en local avec toutes les relations entre tables correctement configurées.
+
+
+#### Importation des données
 Avant de lancer l’API, il faut créer la base de données et importer les tables fournies :
 -- Créer la base 
 CREATE DATABASE cinephoria CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
