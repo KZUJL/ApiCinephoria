@@ -24,6 +24,50 @@ cd CinephoriaApi
 Restaurer les dépendances :
 dotnet restore
 
+### Initialisation de la base MySQL
+
+Avant de lancer l’API, il faut créer la base de données et importer les tables fournies :
+-- Créer la base 
+CREATE DATABASE cinephoria CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+Puis, depuis MySQL ou un client comme MySQL Workbench, importer tous les fichiers SQL du dossier Data :
+ApiCinephoria/Data/cinephoria_cinema_schedule.sql
+ApiCinephoria/Data/cinephoria_cinemas.sql
+ApiCinephoria/Data/cinephoria_incident.sql
+ApiCinephoria/Data/cinephoria_locations.sql
+ApiCinephoria/Data/cinephoria_movies.sql
+ApiCinephoria/Data/cinephoria_movietimes.sql
+ApiCinephoria/Data/cinephoria_roles.sql
+ApiCinephoria/Data/cinephoria_rooms.sql
+ApiCinephoria/Data/cinephoria_users.sql
+
+💡 Astuce : en ligne de commande MySQL :
+mysql -u root -p cinephoria < ApiCinephoria/Data/cinephoria_users.sql
+(refaire pour chaque fichier, ou créer un script pour tout importer d’un coup)
+
+### Initialisation de la base MONGO DB
+L’API utilise MongoDB pour gérer les reviews et réservations. Pour démarrer en local, voici comment configurer la base avec les données existantes.
+
+1️⃣ Créer la base et les collections
+use reservation; // Crée la base reservation si elle n'existe pas
+
+db.createCollection("reviews");
+db.createCollection("reservations");
+
+2️⃣ Importer les données existantes
+Les fichiers JSON sont fournis dans le dossier Data/ et contiennent toutes les données existantes pour démarrer l’API.
+
+Les fichiers JSON sont :
+
+Data/reviews.json
+
+Data/reservations.json
+
+Pour importer :
+
+mongoimport --db reservation --collection reviews --file Data/reviews.json --jsonArray
+mongoimport --db reservation --collection reservations --file Data/reservations.json --jsonArray
+
 
 ### Configuration des secrets avec .NET User Secrets
 
@@ -38,6 +82,8 @@ dotnet user-secrets set "ConnectionStrings:MYSQL_CONNECTION" "Server=localhost;D
 
 # Base de données MongoDB
 dotnet user-secrets set "ConnectionStrings:MONGODB_CONNECTION" "mongodb://<USER>:<PASSWORD>@localhost:27017/?authSource=reservation" --project ApiCinephoria/ApiCinephoria.csproj
+
+Remplacez <YOUR_MYSQL_PASSWORD> et <USER>:<PASSWORD> par vos identifiants locaux.
 
 # Mailjet (remplacer par vos propres clés)
 dotnet user-secrets set "Mailjet:MAILJET_APIKEY" "<YOUR_MAILJET_APIKEY>" --project ApiCinephoria/ApiCinephoria.csproj
