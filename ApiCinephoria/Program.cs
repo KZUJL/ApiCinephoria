@@ -26,9 +26,22 @@ if (string.IsNullOrEmpty(mongoConnection))
     throw new Exception("MONGODB_CONNECTION non défini.");
 
 // Convertir URI Railway en connection string MySQL classique
-var uri = new Uri(mysqlConnection);
-var userInfo = uri.UserInfo.Split(':');
-var mysqlConnectionString = $"Server={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Uid={userInfo[0]};Pwd={userInfo[1]};SslMode=Preferred;";
+string mysqlConnectionString;
+
+if (mysqlConnection.StartsWith("mysql://"))
+{
+    // Mode Railway / Fly.io
+    var uri = new Uri(mysqlConnection);
+    var userInfo = uri.UserInfo.Split(':');
+    mysqlConnectionString =
+        $"Server={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Uid={userInfo[0]};Pwd={userInfo[1]};SslMode=Preferred;";
+}
+else
+{
+    // Mode local (déjà une connection string classique)
+    mysqlConnectionString = mysqlConnection;
+}
+
 
 // DbContext
 builder.Services.AddDbContext<CinephoriaContext>(options =>
@@ -106,3 +119,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+public partial class Program { }
