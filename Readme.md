@@ -215,6 +215,6 @@ dotnet test
 # Autres dépôts du projet Cinephoria
 
 - [Cinephoria Front-end (Vue.js)](https://github.com/KZUJL/CinephoriaWeb)
-- [Cinephoria Back-end (C# .NET)](https://github.com/ton-org/CinephoriaApi)
+- [Cinephoria Back-end (C# .NET)](https://github.com/KZUJL/ApiCinephoria)
 - [Cinephoria Mobile (Flutter)](https://github.com/KZUJL/CinephoriaMobileApp)
 - [Cinephoria Desktop (C#)](https://github.com/KZUJL/CinephoriaDesktop)
