@@ -133,6 +133,20 @@ ApiCinephoria/Data/cinephoria_users.sql
 mysql -u root -p cinephoria < ApiCinephoria/Data/cinephoria_users.sql
 (refaire pour chaque fichier, ou créer un script pour tout importer d’un coup)
 
+### Exemple de transaction SQL
+
+Pour montrer l’utilisation de transactions SQL, un fichier `transaction_example.sql` est fourni dans le dossier `Data/Transactions/`.  
+
+Ce fichier contient un exemple de **transaction complète pour l’ajout d’un nouvel employé** dans la table `users` avec vérification du rôle associé.  
+L’objectif est de garantir que **tout est exécuté ou rien**, afin de maintenir la cohérence de la base de données.
+
+pour exécuter cette transaction depuis MySQL :
+
+```bash
+mysql -u root -p cinephoria < ApiCinephoria/Data/Transactions/transaction_example.sql
+
+
+
 ### Initialisation de la base MONGO DB
 L’API utilise MongoDB pour gérer les reviews et réservations. Pour démarrer en local, voici comment configurer la base avec les données existantes.
 
@@ -201,6 +215,6 @@ dotnet test
 # Autres dépôts du projet Cinephoria
 
 - [Cinephoria Front-end (Vue.js)](https://github.com/KZUJL/CinephoriaWeb)
-- [Cinephoria Back-end (C# .NET)](https://github.com/ton-org/CinephoriaApi)
+- [Cinephoria Back-end (C# .NET)](https://github.com/KZUJL/ApiCinephoria)
 - [Cinephoria Mobile (Flutter)](https://github.com/KZUJL/CinephoriaMobileApp)
 - [Cinephoria Desktop (C#)](https://github.com/KZUJL/CinephoriaDesktop)
