@@ -1,8 +1,11 @@
 using ApiCinephoria.Data;
 using ApiCinephoria.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,10 +89,44 @@ builder.Services.AddCors(options =>
         corsBuilder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
+builder.Services.AddAuthorization();
 // Controllers / Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("K3CPLNZ7ZSJYGPPU2HU4XZI4NXTX7YVH")),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("Authentication failed: " + context.Exception.Message);
+                return Task.CompletedTask;
+            },
+            OnMessageReceived = context =>
+            {
+                Console.WriteLine("Token reçu: " + context.Request.Headers["Authorization"]);
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("Token validé pour : " + context.Principal.Identity.Name);
+                return Task.CompletedTask;
+            }
+        };
+    });
+
 
 var app = builder.Build();
 
@@ -115,7 +152,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowLocalhost");
+
+
+app.UseAuthentication();
 app.UseAuthorization();
+
+
 app.MapControllers();
 
 app.Run();

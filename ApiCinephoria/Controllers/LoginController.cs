@@ -3,6 +3,11 @@ using ApiCinephoria.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BCrypt.Net;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ApiCinephoria.Controllers
 {
@@ -21,6 +26,7 @@ namespace ApiCinephoria.Controllers
                 res[i] = valid[rnd.Next(valid.Length)];
             return new string(res);
         }
+
         public LoginController(CinephoriaContext context, MailService mailService)
         {
             _context = context;
@@ -91,8 +97,26 @@ namespace ApiCinephoria.Controllers
                 });
             }
 
-            var response = new LoginResponseDto
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("K3CPLNZ7ZSJYGPPU2HU4XZI4NXTX7YVH"));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
             {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: "ton-app",
+                audience: "ton-app",
+                claims: claims,
+                expires: DateTime.Now.AddHours(5),
+                signingCredentials: creds
+            );
+
+            return Ok(new LoginResponseDto
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
                 UserId = user.UserId,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
@@ -100,11 +124,10 @@ namespace ApiCinephoria.Controllers
                 UserName = user.UserName,
                 Role = user.Role,
                 MustChangePassword = user.MustChangePassword
-            };
-
-            return Ok(response);
+            });
         }
 
+        [Authorize]
         [HttpPut("update-password")]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordDto dto)
         {

@@ -1,5 +1,6 @@
 ﻿using ApiCinephoria.Data;
 using ApiCinephoria.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 namespace ApiCinephoria.Controllers
@@ -16,6 +17,7 @@ namespace ApiCinephoria.Controllers
             return await _context.Movies.ToListAsync();
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<MovieModel>> CreateMovie(MovieModel movie)
         {

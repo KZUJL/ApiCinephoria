@@ -11,5 +11,6 @@
         public bool MustChangePassword { get; set; }
 
         public RoleModel Role { get; set; }
+        public string Token { get; internal set; }
     }
 }
