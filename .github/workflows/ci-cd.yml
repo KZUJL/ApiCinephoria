@@ -24,7 +24,7 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Run unit tests only
-        run: dotnet test ApiCinephoria.Tests/ApiCinephoria.Tests.csproj --no-build --verbosity normal
+        run: dotnet test ApiCinephoria.Tests/ApiCinephoria.Tests.csproj --verbosity normal
 
   deploy:
     needs: build-test
