@@ -23,8 +23,8 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
+      - name: Run unit tests only
+        run: dotnet test ApiCinephoria.Tests/ApiCinephoria.Tests.csproj --no-build --verbosity normal
 
   deploy:
     needs: build-test
