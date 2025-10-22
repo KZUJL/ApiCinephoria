@@ -2,10 +2,6 @@ using ApiCinephoria.Controllers;
 using ApiCinephoria.Models;
 using ApiCinephoria.Data;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiCinephoria.Tests.Unit
