@@ -16,7 +16,7 @@ builder.Configuration
     .AddEnvironmentVariables()
     .AddUserSecrets<Program>(optional: true);
 
-// Secrets Fly.io
+// Secrets 
 var mysqlConnection = builder.Configuration["MYSQL_CONNECTION"];
 var mongoConnection = builder.Configuration["MONGODB_CONNECTION"];
 var mailjetApiKey = builder.Configuration["MAILJET_APIKEY"];

@@ -2,7 +2,7 @@
 
 namespace ApiCinephoria.Data
 {
-    public class DatabaseSeeder
+    public class DatabaseSeeder : IDatabaseSeeder
     {
         private readonly string _connectionString;
 

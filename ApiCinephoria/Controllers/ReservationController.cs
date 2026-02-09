@@ -48,7 +48,6 @@ namespace ApiCinephoria.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ReservationCreateModel reservation)
         {
-           
             var reservationModel = new ReservationModel
             {
                 Id = ObjectId.GenerateNewId().ToString(),
@@ -61,13 +60,28 @@ namespace ApiCinephoria.Controllers
                 SeatName = reservation.SeatName,
                 RoomId = reservation.RoomId,
                 RoomName = reservation.RoomName,
-                ReservationDate = reservation.ReservationDate,  
+                ReservationDate = reservation.ReservationDate,
                 ReservationTime = reservation.ReservationTime
             };
 
-            await _reservationService.CreateAsync(reservationModel);
+            try
+            {
+                await _reservationService.CreateAsync(reservationModel);
 
-            return CreatedAtAction(nameof(Get), new { id = reservationModel.Id }, reservationModel);
+                return CreatedAtAction(
+                    nameof(Get),
+                    new { id = reservationModel.Id },
+                    reservationModel
+                );
+            }
+            catch (Exception ex)
+            {
+                // cas typique : siège déjà réservé (index unique Mongo)
+                return Conflict(new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
         [HttpPut("{id}")]

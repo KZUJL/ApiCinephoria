@@ -1,5 +1,6 @@
 ﻿using ApiCinephoria.Data;
 using ApiCinephoria.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -80,6 +81,7 @@ namespace ApiCinephoria.Controllers
         }
 
         [HttpPut("{movieTimesId}")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> UpdateMovieTime(int movieTimesId, [FromBody] MovieTimesDto updatedMovieTime)
         {
             if (updatedMovieTime == null || movieTimesId != updatedMovieTime.MovieTimesId)
@@ -104,6 +106,7 @@ namespace ApiCinephoria.Controllers
         }
 
         [HttpDelete("{movieTimesId}")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> DeleteMovieTime(int movieTimesId)
         {
             var movieTime = await _context.MovieTimes.FindAsync(movieTimesId);
@@ -117,6 +120,7 @@ namespace ApiCinephoria.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<ActionResult<MovieTimesModel>> CreateMovieTime([FromBody] MovieTimesDto dto)
         {
             if (dto == null)
