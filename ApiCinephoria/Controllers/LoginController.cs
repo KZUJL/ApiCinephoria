@@ -61,7 +61,7 @@ namespace ApiCinephoria.Controllers
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            Console.WriteLine("👤 Utilisateur enregistré, tentative d'envoi de mail...");
+            Console.WriteLine("Utilisateur enregistré, tentative d'envoi de mail...");
             // Envoi du mail via MailService
             bool mailSent = await _mailService.SendRegisterEmail(user.Email, user.UserName, plainPassword);
 
@@ -103,7 +103,9 @@ namespace ApiCinephoria.Controllers
             var claims = new[]
             {
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Role, user.Role.RoleName)
+
             };
 
             var token = new JwtSecurityToken(
