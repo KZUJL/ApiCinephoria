@@ -106,5 +106,42 @@ namespace ApiCinephoria.Tests.Integration
 
             Assert.False(response.IsSuccessStatusCode);
         }
+
+        [Fact]
+        public async Task PostReservation_DoubleReservationSimultaneous_ShouldAllowOnlyOne()
+        {
+            var reservation = new ReservationCreateModel
+            {
+                UserId = 1,
+                MovieId = 1,
+                MovieTitle = "Film Test",
+                CinemaId = 1,
+                CinemaName = "Cinéma Test",
+                SeatId = 10,
+                SeatName = "B2",
+                RoomId = 1,
+                RoomName = "Salle 1",
+                ReservationDate = DateTime.Today,
+                ReservationTime = DateTime.Now
+            };
+
+            var content1 = SerializeToJson(reservation);
+            var content2 = SerializeToJson(reservation);
+
+            // Lancement des deux requêtes en parallèle
+            var task1 = _client.PostAsync("/api/reservation", content1);
+            var task2 = _client.PostAsync("/api/reservation", content2);
+
+            await Task.WhenAll(task1, task2);
+
+            var response1 = task1.Result;
+            var response2 = task2.Result;
+
+            var successCount = new[] { response1, response2 }
+                .Count(r => r.StatusCode == System.Net.HttpStatusCode.Created);
+
+            // Une seule réservation doit être acceptée
+            Assert.Equal(1, successCount);
+        }
     }
 }

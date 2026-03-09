@@ -57,6 +57,7 @@ namespace ApiCinephoria.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> DeleteMovie(int id)
         {
             var movie = await _context.Movies.FindAsync(id);
@@ -64,6 +65,9 @@ namespace ApiCinephoria.Controllers
             {
                 return NotFound();
             }
+            var movieTimes = _context.MovieTimes
+            .Where(mt => mt.MovieId == id);
+            _context.MovieTimes.RemoveRange(movieTimes);
 
             _context.Movies.Remove(movie);
             await _context.SaveChangesAsync();
@@ -75,64 +79,24 @@ namespace ApiCinephoria.Controllers
         public async Task<ActionResult<IEnumerable<MovieModel>>> GetMoviesByAvailableDate()
         {
             DateTime today = DateTime.Today;
+            int daysUntilWednesday = ((int)DayOfWeek.Wednesday - (int)today.DayOfWeek + 7) % 7;
+            DateTime nextWednesday = today.AddDays(daysUntilWednesday);
+            DateTime previousWednesday = nextWednesday.AddDays(-7);
 
-            var movies = await _context.Movies.ToListAsync();
-
-            // date la plus récente en base
-            DateTime maxDate = movies.Max(m => m.AvailableDate);
-
-            // nombre de semaines de décalage
-            int weeksOffset = (today - maxDate).Days / 7;
-
-            DateTime startDate = today.AddDays(-7);
-            DateTime endDate = today.AddDays(7);
-
-            var result = movies
-                .Select(m => new MovieModel
-                {
-                    MovieId = m.MovieId,
-                    Title = m.Title,
-                    Poster = m.Poster,
-                    AvailableDate = m.AvailableDate.AddDays(weeksOffset * 7)
-                })
-                .Where(m => m.AvailableDate >= startDate &&
-                            m.AvailableDate <= endDate)
-                .OrderBy(m => m.AvailableDate)
-                .ToList();
-
-            return result;
+            return await _context.Movies
+                .Where(m => m.AvailableDate >= previousWednesday && m.AvailableDate <= nextWednesday)
+                .ToListAsync();
         }
-
 
         [HttpGet("soon-available")]
         public async Task<ActionResult<IEnumerable<MovieModel>>> GetMoviesAvailableAfterToday()
         {
             DateTime today = DateTime.Today;
 
-            var movies = await _context.Movies.ToListAsync();
-
-            DateTime maxDate = movies.Max(m => m.AvailableDate);
-            int weeksOffset = (today - maxDate).Days / 7;
-
-            DateTime startDate = today.AddDays(7);
-            DateTime endDate = today.AddDays(28);
-
-            var result = movies
-                .Select(m => new MovieModel
-                {
-                    MovieId = m.MovieId,
-                    Title = m.Title,
-                    Poster = m.Poster,
-                    AvailableDate = m.AvailableDate.AddDays(weeksOffset * 7)
-                })
-                .Where(m => m.AvailableDate > startDate &&
-                            m.AvailableDate <= endDate)
-                .OrderBy(m => m.AvailableDate)
-                .ToList();
-
-            return result;
+            return await _context.Movies
+                .Where(m => m.AvailableDate > today)
+                .ToListAsync();
         }
-
         [HttpGet("{id}")]
         public async Task<ActionResult<MovieModel>> GetMovieById(int id)
         {
