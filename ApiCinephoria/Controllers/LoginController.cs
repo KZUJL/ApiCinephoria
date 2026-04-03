@@ -17,6 +17,14 @@ namespace ApiCinephoria.Controllers
     {
         private readonly CinephoriaContext _context;
         private readonly MailService _mailService;
+        private readonly string _jwtSecret;
+
+        public LoginController(CinephoriaContext context, MailService mailService, IConfiguration config)
+        {
+            _context = context;
+            _mailService = mailService;
+            _jwtSecret = config["JWT_SECRET"];
+        }
         private string GenerateRandomPassword(int length = 10)
         {
             const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%&*";
@@ -97,7 +105,7 @@ namespace ApiCinephoria.Controllers
                 });
             }
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("K3CPLNZ7ZSJYGPPU2HU4XZI4NXTX7YVH"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSecret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]

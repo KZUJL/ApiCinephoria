@@ -21,6 +21,9 @@ var mysqlConnection = builder.Configuration["MYSQL_CONNECTION"];
 var mongoConnection = builder.Configuration["MONGODB_CONNECTION"];
 var mailjetApiKey = builder.Configuration["MAILJET_APIKEY"];
 var mailjetApiSecret = builder.Configuration["MAILJET_APISECRET"];
+var jwtSecret = builder.Configuration["JWT_SECRET"];
+if (string.IsNullOrEmpty(jwtSecret))
+    throw new Exception("JWT_SECRET non défini.");
 
 if (string.IsNullOrEmpty(mysqlConnection))
     throw new Exception("MYSQL_CONNECTION non défini.");
@@ -100,8 +103,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("K3CPLNZ7ZSJYGPPU2HU4XZI4NXTX7YVH")),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
             ValidateIssuer = false,
             ValidateAudience = false,
             ClockSkew = TimeSpan.Zero
